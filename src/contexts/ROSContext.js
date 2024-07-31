@@ -27,30 +27,41 @@ export const ROSProvider = ({ children }) => {
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
-        const rosClient = new ROSLIB.Ros({
-            url: 'ws://localhost:9090' // ここを適切なWebSocket URLに変更してください
-        });
+        let intervalId;
 
-        rosClient.on('connection', () => {
-            console.log('Connected to websocket server.');
-            setIsConnected(true);
-            setRos(rosClient);
-        });
+        const connectROS = () => {        
+            const rosClient = new ROSLIB.Ros({
+                url: process.env.REACT_APP_ROSBRIDGE_URL || 'ws://localhost:9090' // ここを適切なWebSocket URLに変更してください
+            });
 
-        rosClient.on('error', (error) => {
-            console.log('Error connecting to websocket server:', error);
-            setIsConnected(false);
-        });
+            rosClient.on('connection', () => {
+                console.log('Connected to websocket server.');
+                setIsConnected(true);
+                setRos(rosClient);
+                clearInterval(intervalId);
+            });
 
-        rosClient.on('close', () => {
-            console.log('Connection to websocket server closed.');
-            setIsConnected(false);
-        });
+            rosClient.on('error', (error) => {
+                console.log('Error connecting to websocket server:', error);
+                setIsConnected(false);
+            });
+
+            rosClient.on('close', () => {
+                console.log('Connection to websocket server closed.');
+                setIsConnected(false);
+                intervalId = setInterval(connectROS, 5000);
+            });
+
+            return rosClient;
+        };
+
+        const rosClient = connectROS();
 
         return () => {
             if (rosClient) {
                 rosClient.close();
             }
+            clearInterval(intervalId);
         };
     }, []);
 
