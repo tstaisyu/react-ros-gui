@@ -14,3 +14,49 @@
  * limitations under the License.
  */
 
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import ROSLIB from 'roslib';
+
+// ROS接続のコンテキストを作成
+const ROSContext = createContext(null);
+
+export const useROS = () => useContext(ROSContext);
+
+export const ROSProvider = ({ children }) => {
+    const [ros, setRos] = useState(null);
+    const [isConnected, setIsConnected] = useState(false);
+
+    useEffect(() => {
+        const rosClient = new ROSLIB.Ros({
+            url: 'ws://localhost:9090' // ここを適切なWebSocket URLに変更してください
+        });
+
+        rosClient.on('connection', () => {
+            console.log('Connected to websocket server.');
+            setIsConnected(true);
+            setRos(rosClient);
+        });
+
+        rosClient.on('error', (error) => {
+            console.log('Error connecting to websocket server:', error);
+            setIsConnected(false);
+        });
+
+        rosClient.on('close', () => {
+            console.log('Connection to websocket server closed.');
+            setIsConnected(false);
+        });
+
+        return () => {
+            if (rosClient) {
+                rosClient.close();
+            }
+        };
+    }, []);
+
+    return (
+        <ROSContext.Provider value={{ ros, isConnected }}>
+            {children}
+        </ROSContext.Provider>
+    );
+};
