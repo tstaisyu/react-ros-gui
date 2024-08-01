@@ -16,6 +16,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import ROSLIB from 'roslib';
+import log from 'loglevel';
 
 // ROS接続のコンテキストを作成
 const ROSContext = createContext(null);
@@ -35,19 +36,19 @@ export const ROSProvider = ({ children }) => {
             });
 
             rosClient.on('connection', () => {
-                console.log('Connected to websocket server.');
+                log.info('Connected to websocket server.');
                 setIsConnected(true);
                 setRos(rosClient);
                 clearInterval(intervalId);
             });
 
             rosClient.on('error', (error) => {
-                console.log('Error connecting to websocket server:', error);
+                log.error('Error connecting to websocket server:', error);
                 setIsConnected(false);
             });
 
             rosClient.on('close', () => {
-                console.log('Connection to websocket server closed.');
+                log.info('Connection to websocket server closed.');
                 setIsConnected(false);
                 intervalId = setInterval(connectROS, 5000);
             });
