@@ -17,20 +17,20 @@
 import React from 'react';
 import './App.css';
 import { ROSProvider } from './contexts/ROSContext';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './components/Home/Home';
-import MainPage from './components/Main/Main';
+import Main from './components/Main/Main';
 
 function App() {
   return (
     <ROSProvider>
       <div className="App">
       <Router>
-            <Switch>
-                <Route path="/" exact component={Home} />
-                <Route path="/main" component={MainPage} />
-            </Switch>
-      </Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/main" element={<Main />} />      
+        </Routes>
+      </Router>  
       </div>
     </ROSProvider>
   );
