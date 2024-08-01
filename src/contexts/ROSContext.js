@@ -16,7 +16,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import ROSLIB from 'roslib';
-import logger from './logger';
 
 // ROS接続のコンテキストを作成
 const ROSContext = createContext(null);
