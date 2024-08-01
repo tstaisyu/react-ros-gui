@@ -17,13 +17,20 @@
 import React from 'react';
 import './App.css';
 import { ROSProvider } from './contexts/ROSContext';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Home from './components/Home/Home';
+import MainPage from './components/Main/Main';
 
 function App() {
   return (
     <ROSProvider>
       <div className="App">
-        {/* アプリの他のコンポーネント */}
-        <h1>ROSと接続されたReactアプリ</h1>
+      <Router>
+            <Switch>
+                <Route path="/" exact component={Home} />
+                <Route path="/main" component={MainPage} />
+            </Switch>
+      </Router>
       </div>
     </ROSProvider>
   );
